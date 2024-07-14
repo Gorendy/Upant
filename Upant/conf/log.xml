@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <configSections>
+        <section name="log4net" type="log4net.Config.Log4NetConfigurationSectionHandler, log4net" />
+    </configSections>
+
+    <log4net>
+        <appender name="info" type="log4net.Appender.RollingFileAppender">
+            <file value="log\\" />
+            <datePattern value='"INFO"_yyyy-MM-dd".log"' />
+            <appendToFile value="true" />
+            <rollingStyle value="Date" />
+            <maxSizeRollBackups value="5" />
+            <maximumFileSize value="10MB" />
+            <staticLogFileName value="false" />
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="[%date] CurThread:%thread %-5level(%logger{2}) --> %message%newline" />
+            </layout>
+            <filter type="log4net.Filter.LevelRangeFilter">
+                <levelMin value="INFO" />
+                <levelMax value="WARN" />
+            </filter>
+        </appender>
+        <appender name="error" type="log4net.Appender.RollingFileAppender">
+            <file value="log\\" />
+            <datePattern value='ERROR_yyyy-MM-dd".log"' />
+            <appendToFile value="true" />
+            <rollingStyle value="Date" />
+            <maxSizeRollBackups value="5" />
+            <maximumFileSize value="10MB" />
+            <staticLogFileName value="false" />
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="[%date] CurThread:%thread %-5level(%logger{3}) %method:%line --> %message%newline" />
+            </layout>
+            <filter type="log4net.Filter.LevelRangeFilter">
+                <levelMin value="ERROR" />
+                <levelMax value="FATAL" />
+            </filter>
+        </appender>
+        <appender name="debug" type="log4net.Appender.RollingFileAppender">
+            <file value="log\\" />
+            <datePattern value='DEBUG_yyyy-MM-dd".log"' />
+            <appendToFile value="true" />
+            <rollingStyle value="Date" />
+            <maxSizeRollBackups value="5" />
+            <maximumFileSize value="10MB" />
+            <staticLogFileName value="false" />
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="[%date] CurThread:%thread %-5level(%logger{3}) --> %message%newline" />
+            </layout>
+            <filter type="log4net.Filter.LevelRangeFilter">
+                <levelMax value="DEBUG" />
+            </filter>
+        </appender>
+        <appender name="ColoredConsoleAppender" type="log4net.Appender.ColoredConsoleAppender">
+            <mapping>
+                <level value="ERROR" />
+                <foreColor value="Red" />
+                <!--<backColor value="Red, HighIntensity" />-->
+            </mapping>
+            <mapping>
+                <level value="DEBUG" />
+                <foreColor value="Green" />
+            </mapping>
+            <mapping>
+                <level value="WARN" />
+                <foreColor value="Yellow" />
+            </mapping>
+            <mapping>
+                <level value="INFO" />
+                <foreColor value="Blue" />
+            </mapping>
+            <layout type="log4net.Layout.PatternLayout">
+                <conversionPattern value="[%date] CurThread:%2thread %-5level(%logger{2}) --> %message%newline" />
+            </layout>
+        </appender>
+
+        <root>
+            <level value="DEBUG" />
+            <appender-ref ref="debug" />
+            <appender-ref ref="info" />
+            <appender-ref ref="error" />
+            <appender-ref ref="ColoredConsoleAppender" />
+        </root>
+    </log4net>
+</configuration>
