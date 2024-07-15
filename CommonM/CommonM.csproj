@@ -50,6 +50,8 @@
     <Compile Include="logger\LogFactory.cs" />
     <Compile Include="logger\LogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="util\FileUtil.cs" />
+    <Compile Include="util\ResultUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

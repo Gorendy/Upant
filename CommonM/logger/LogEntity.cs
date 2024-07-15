@@ -4,6 +4,9 @@ using log4net;
 namespace CommonM.logger
 {
 
+    /// <summary>
+    /// 记录日志类
+    /// </summary>
     public class Logger : LogBase
     {
         

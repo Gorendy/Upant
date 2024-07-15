@@ -3,27 +3,133 @@ using System.Collections.Generic;
 
 namespace CommonM.logger
 {
-    public enum ResultCode
+    /// <summary>
+    /// 区分异常种类
+    /// </summary>
+    public enum RCode
     {
-        none,
+        #region 未定义类型
+
+        // 未定义类型
+        NONE,
+        WARN,
+        PARAM_NOTFOUND,
+
+        #endregion
+
+        #region 文件操作相关
+
+        // unknown
+        FILE_WARN,
+        FILE_ERROR,
+        // info
+        FILE_EXIST,
+        // ok
+        FILE_OK_COPY,
+        FILE_OK_DELETE,
+        // warn
+        FILE_WARN_NOTEXIST,
+        // error
+        FILE_NOTFOUND,
+        FILE_DIR_NOTFOUND,
+        FILE_ERROR_CATEGORY,
+        FILE_ERROR_DELETE,
+        FILE_ERROR_COPY,
+        #endregion
+
+        #region 配置文件操作
+
+        // unknown
+        CONF_ERROR,
+        CONF_WARN,
+        // info
+        
+        // ok
+        
+        // warn
+        CONF_WARN_UPDATE,
+        // error
+        CONF_ERROR_OPERATION,
+        #endregion
+
+        #region 目标程序执行
+
+        // 程序执行
+        EXE_COMPLETE,
+        EXE_ERROR,
+
+        #endregion
     }
 
+    /// <summary>
+    /// 异常种类对应信息
+    /// </summary>
     public static class Result
     {
-        
-        private static readonly Dictionary<ResultCode, MessageBlock> messageList =
-            new Dictionary<ResultCode, MessageBlock>()
+        /// <summary>
+        /// 根据类型分成不同编号和信息 00_00_00
+        /// 一级分类
+        /// 0：未定义错误
+        /// 1：文件类
+        /// 2：配置文件操作
+        /// 3：程序执行
+        /// 二级分类
+        /// 0. unknown 1. info 2.ok, 3. warn 4.error
+        /// </summary>
+        private static readonly Dictionary<RCode, MessageBlock> messageList =
+            new Dictionary<RCode, MessageBlock>()
             {
-                { ResultCode.none, new MessageBlock(000_000, "未知错误！！")},
+                #region 未定义错误
+                { RCode.NONE, new MessageBlock(00_00_00, "未知错误") },
+                { RCode.WARN, new MessageBlock(00_30_10, "未知警告") },
+                { RCode.PARAM_NOTFOUND, new MessageBlock(00_40_00, "参数错误，未发现参数") },
+                #endregion
+
+                #region 文件
+                // unknown 0
+                { RCode.FILE_WARN, new MessageBlock(10_00_01, "文件操作警告") },
+                { RCode.FILE_ERROR, new MessageBlock(10_00_04, "文件操作错误") },
+                // info 1
+                { RCode.FILE_EXIST, new MessageBlock(10_10_01, "文件已存在") },
+                // ok 2
+                { RCode.FILE_OK_COPY, new MessageBlock(10_20_01, "文件复制成功") },
+                { RCode.FILE_OK_DELETE, new MessageBlock(10_20_02, "文件删除成功") },
+                // warn 3
+                { RCode.FILE_WARN_NOTEXIST, new MessageBlock(10_30_01, "文件不存在") },
+                // error 4
+                { RCode.FILE_NOTFOUND, new MessageBlock(10_40_01, "指定文件未找到") },
+                { RCode.FILE_DIR_NOTFOUND, new MessageBlock(10_40_02, "文件夹未找到") },
+                { RCode.FILE_ERROR_CATEGORY, new MessageBlock(10_40_03, "文件类型错误") },
+                { RCode.FILE_ERROR_DELETE, new MessageBlock(10_40_04, "文件删除失败") },
+                { RCode.FILE_ERROR_COPY, new MessageBlock(10_40_04, "文件复制失败") },
+                #endregion
+
+                #region 配置文件
+                // unknown 0
+                { RCode.CONF_ERROR, new MessageBlock(20_00_01, "配置文件错误") },
+                { RCode.CONF_WARN, new MessageBlock(20_00_01, "配置文件警告") },
+                // info 1
+                // ok 2
+                // warn 3
+                { RCode.CONF_WARN_UPDATE, new MessageBlock(20_30_0, "配置文件更新警告") },
+                // error 4
+                { RCode.CONF_ERROR_OPERATION, new MessageBlock(10_40_01, "配置文件操作错误") },
+                #endregion
+                #region 目标程序
+                { RCode.EXE_ERROR, new MessageBlock(30_00_01, "目标程序执行失败") },
+                { RCode.EXE_COMPLETE, new MessageBlock(30_02_00, "目标程序执行成功，程序以运行") },                
+                #endregion
+
             };
 
-        public static MessageBlock detail(ResultCode code) {
+        public static MessageBlock detail(RCode code) {
             if (!messageList.ContainsKey(code)) {
-                return new MessageBlock(000_000, "未知类型错误");
+                return messageList[RCode.NONE];
             }
 
             return messageList[code];
         }
+
         public class MessageBlock
         {
             public readonly int code;
@@ -35,6 +141,7 @@ namespace CommonM.logger
             }
         }
     }
+
     public interface ILogger
     {
         void debug(string message);
@@ -49,4 +156,3 @@ namespace CommonM.logger
         void fatal(string message, Exception exception);
     }
 }
-
