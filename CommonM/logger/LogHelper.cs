@@ -22,11 +22,15 @@ namespace CommonM.logger
         // unknown
         FILE_WARN,
         FILE_ERROR,
+        FILE_OPERATION,
+        FILE_NOT_EXIST,
         // info
         FILE_EXIST,
         // ok
         FILE_OK_COPY,
         FILE_OK_DELETE,
+        FILE_OK_UNZIP,
+        FILE_OK_MOVE,
         // warn
         FILE_WARN_NOTEXIST,
         // error
@@ -35,6 +39,8 @@ namespace CommonM.logger
         FILE_ERROR_CATEGORY,
         FILE_ERROR_DELETE,
         FILE_ERROR_COPY,
+        FILE_ERROR_UNZIP,
+        FILE_ERROR_MOVE,
         #endregion
 
         #region 配置文件操作
@@ -89,11 +95,15 @@ namespace CommonM.logger
                 // unknown 0
                 { RCode.FILE_WARN, new MessageBlock(10_00_01, "文件操作警告") },
                 { RCode.FILE_ERROR, new MessageBlock(10_00_04, "文件操作错误") },
+                { RCode.FILE_OPERATION, new MessageBlock(10_00_03, "文件操作") },
+                { RCode.FILE_NOT_EXIST, new MessageBlock(10_00_02, "文件不存在") },
                 // info 1
                 { RCode.FILE_EXIST, new MessageBlock(10_10_01, "文件已存在") },
                 // ok 2
                 { RCode.FILE_OK_COPY, new MessageBlock(10_20_01, "文件复制成功") },
                 { RCode.FILE_OK_DELETE, new MessageBlock(10_20_02, "文件删除成功") },
+                { RCode.FILE_OK_UNZIP, new MessageBlock(10_20_03, "文件解压缩成功") },
+                { RCode.FILE_OK_MOVE, new MessageBlock(10_20_04, "文件移动成功") },
                 // warn 3
                 { RCode.FILE_WARN_NOTEXIST, new MessageBlock(10_30_01, "文件不存在") },
                 // error 4
@@ -102,6 +112,8 @@ namespace CommonM.logger
                 { RCode.FILE_ERROR_CATEGORY, new MessageBlock(10_40_03, "文件类型错误") },
                 { RCode.FILE_ERROR_DELETE, new MessageBlock(10_40_04, "文件删除失败") },
                 { RCode.FILE_ERROR_COPY, new MessageBlock(10_40_04, "文件复制失败") },
+                { RCode.FILE_ERROR_UNZIP, new MessageBlock(10_40_05, "文件解压缩失败") },
+                { RCode.FILE_ERROR_MOVE, new MessageBlock(10_40_05, "文件移动失败") },
                 #endregion
 
                 #region 配置文件
@@ -144,15 +156,15 @@ namespace CommonM.logger
 
     public interface ILogger
     {
-        void debug(string message);
-        void debug(string message, Exception exception);
-        void info(string message);
-        void info(string message, Exception exception);
-        void warn(string message);
-        void warn(string message, Exception exception);
-        void error(string message);
-        void fatal(string message);
-        void error(string message, Exception exception);
-        void fatal(string message, Exception exception);
+        
+        void debug(RCode code, string message = null);
+        void debug(RCode code, string message, Exception e);
+        void info(RCode code, string message = null);
+        void info(RCode code, string message, Exception e);
+        void warn(RCode code, string message = null);
+        void warn(RCode code, string message, Exception e);
+        void error(RCode code, string message = null);
+        void error(RCode code, string message, Exception e);
     }
+    
 }
