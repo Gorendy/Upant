@@ -9,11 +9,9 @@ namespace CommonM.logger
     /// </summary>
     public class Logger : LogBase
     {
-        
+        public delegate string MessageSend();
         public Logger(ILog log) : base(log) {
         }
-
-        
 
         public Logger(string name) : base(name) {
         }
@@ -21,100 +19,111 @@ namespace CommonM.logger
         public Logger(Type type) : base(type) {
         }
 
-        public override void debug(string message) {
-            debug(message, null);
-        }
+       
 
-        public override void debug(string message, Exception exception) {
-            if (!log.IsDebugEnabled) {
+        public override void debug(RCode code, string message = null)
+        {
+            if (!log.IsDebugEnabled)
+            {
                 return;
             }
 
-            if (string.IsNullOrEmpty(message)) {
+            log.Debug(msg(code, message));
+        }
+        public void debug(RCode code, MessageSend send)
+        {
+            if (!log.IsDebugEnabled)
+            {
+                return;
+            }
+            if (send != null)
+                log.Debug(msg(code, send()));
+        }
+
+        public override void debug(RCode code, string message, Exception e)
+        {
+            if (!log.IsDebugEnabled)
+            {
                 return;
             }
 
-            if (exception == null) {
-                log.Debug(message);
+            string s = msg(code, message);
+
+            if (e == null)
+            {
+                log.Debug(s);
             }
-            else {
-                log.Debug(message, exception);
+            else
+            {
+                log.Debug(s, e);
             }
         }
 
-        public override void info(string message) {
-            info(message, null);
+        public override void error(RCode code, string message = null)
+        {
+            log.Error(errorMsg(code, message));
         }
 
-        public override void info(string message, Exception exception) {
-            if (!log.IsInfoEnabled) {
+        public override void error(RCode code, string message, Exception e)
+        {
+            
+            string s = errorMsg(code, message);
+
+            if (e == null)
+            {
+                log.Error(s);
+            }
+            else
+            {
+                log.Error(s, e);
+            }
+        }
+
+        public override void info(RCode code, string message = null)
+        {
+            if (!log.IsInfoEnabled)
+            {
                 return;
             }
 
-            if (string.IsNullOrEmpty(message)) {
+            log.Info(msg(code, message));
+        }
+
+        public override void info(RCode code, string message, Exception e)
+        {
+            string s = msg(code, message);
+
+            if (e == null)
+            {
+                log.Info(s);
+            }
+            else
+            {
+                log.Info(s, e);
+            }
+        }
+
+        public override void warn(RCode code, string message = null)
+        {
+            if (!log.IsWarnEnabled)
+            {
                 return;
             }
 
-            if (exception == null) {
-                log.Info(message);
-            }
-            else {
-                log.Info(message, exception);
-            }
+            log.Warn(warnMsg(code, message));
         }
 
-        public override void warn(string message) {
-            warn(message, null);
-        }
+        public override void warn(RCode code, string message, Exception e)
+        {
+            string s = warnMsg(code, message);
 
-        public override void warn(string message, Exception exception) {
-            if (!log.IsWarnEnabled) {
-                return;
+            if (e == null)
+            {
+                log.Warn(s);
             }
-
-            if (string.IsNullOrEmpty(message)) {
-                return;
-            }
-
-            if (exception == null) {
-                log.Warn(message);
-            }
-            else {
-                log.Warn(message, exception);
-            }
-        }
-
-        public override void error(string message) {
-            error(message, null);
-        }
-
-        public override void fatal(string message) {
-            fatal(message, null);
-        }
-
-        public override void error(string message, Exception exception) {
-            if (string.IsNullOrEmpty(message)) {
-                return;
-            }
-
-            if (exception == null) {
-                log.Error(message);
-            }
-            else {
-                log.Error(message, exception);
-            }
-        }
-
-        public override void fatal(string message, Exception exception) {
-            if (string.IsNullOrEmpty(message)) {
-                return;
-            }
-
-            if (exception == null) {
-                log.Fatal(message);
-            }
-            else {
-                log.Fatal(message, exception);
+            else
+            {
+                log.Warn(s, e);
             }
         }
     }
@@ -133,16 +142,65 @@ namespace CommonM.logger
         protected LogBase(Type type) {
             log = LogManager.GetLogger(type);
         }
-        
-        public abstract void debug(string message);
-        public abstract void debug(string message, Exception exception);
-        public abstract void info(string message);
-        public abstract void info(string message, Exception exception);
-        public abstract void warn(string message);
-        public abstract void warn(string message, Exception exception);
-        public abstract void error(string message);
-        public abstract void fatal(string message);
-        public abstract void error(string message, Exception exception);
-        public abstract void fatal(string message, Exception exception);
+
+        public abstract void debug(RCode code, string message = null);
+        public abstract void debug(RCode code, string message, Exception e);
+        public abstract void error(RCode code, string message = null);
+        public abstract void error(RCode code, string message, Exception e);
+        public abstract void info(RCode code, string message = null);
+        public abstract void info(RCode code, string message, Exception e);
+        public abstract void warn(RCode code, string message = null);
+        public abstract void warn(RCode code, string message, Exception e);
+
+        protected string msg(RCode code, string message = null)
+        {
+            var messageBlock = Result.detail(code);
+            string s = null;
+            if (string.IsNullOrEmpty(message))
+            {
+                s = format(messageBlock);
+            }
+            else
+            {
+                s = format(messageBlock, message);
+            }
+            return s;
+        }
+        protected string warnMsg(RCode code, string message = null)
+        {
+            var messageBlock = Result.detail(code);
+            string s = null;
+            if (string.IsNullOrEmpty(message))
+            {
+                s = format(messageBlock);
+            }
+            else
+            {
+                s = format(messageBlock, message);
+            }
+            return s;
+        }
+        protected string errorMsg(RCode code, string message = null)
+        {
+            var messageBlock = Result.detail(code);
+            string s = null;
+            if (string.IsNullOrEmpty(message))
+            {
+                s = format(messageBlock);
+            } else
+            {
+                s = format(messageBlock, message);
+            }
+            return s;
+        }
+        private string format(Result.MessageBlock message)
+        {
+            return $"ErCode:#{message.code},msg:{message.message}";
+        }
+
+        private string format(Result.MessageBlock message, string msg)
+        {
+            return $"ErCode:#{message.code},msg:{message.message},tips:{msg}";
+        }
     }
 }
