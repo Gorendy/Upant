@@ -45,16 +45,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="domain\config\Configure.cs" />
     <Compile Include="logger\LogEntity.cs" />
     <Compile Include="logger\LogFactory.cs" />
     <Compile Include="logger\LogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="util\ConfigUtil.cs" />
     <Compile Include="util\FileUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net">
-      <Version>2.0.15</Version>
-    </PackageReference>
+    <PackageReference Include="log4net" Version="2.0.15" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

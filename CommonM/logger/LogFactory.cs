@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using log4net;
+using log4net.Config;
 
 namespace CommonM.logger
 {
@@ -21,7 +23,12 @@ namespace CommonM.logger
         public static ILogger getLogger(Type type) {
             return new Logger(type);
         }
-        
+
+        public static void initLog() {
+            string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "conf", "log.xml");
+            FileInfo configFile = new FileInfo(configFilePath);
+            XmlConfigurator.Configure(configFile);
+        }
         
     }
 }

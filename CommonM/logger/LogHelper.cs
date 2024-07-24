@@ -49,13 +49,17 @@ namespace CommonM.logger
         CONF_ERROR,
         CONF_WARN,
         // info
-        
+        CONF_INFO_SERIALIZATION,
+        CONF_INFO_DESERIALIZATION,
         // ok
-        
+        CONF_OK_SERIALIZATION,
+        CONF_OK_DESERIALIZATION,
         // warn
         CONF_WARN_UPDATE,
         // error
         CONF_ERROR_OPERATION,
+        CONF_ERROR_SERIALIZATION,
+        CONF_ERROR_DESERIALIZATION,
         #endregion
 
         #region 目标程序执行
@@ -113,7 +117,7 @@ namespace CommonM.logger
                 { RCode.FILE_ERROR_DELETE, new MessageBlock(10_40_04, "文件删除失败") },
                 { RCode.FILE_ERROR_COPY, new MessageBlock(10_40_04, "文件复制失败") },
                 { RCode.FILE_ERROR_UNZIP, new MessageBlock(10_40_05, "文件解压缩失败") },
-                { RCode.FILE_ERROR_MOVE, new MessageBlock(10_40_05, "文件移动失败") },
+                { RCode.FILE_ERROR_MOVE, new MessageBlock(10_40_06, "文件移动失败") },
                 #endregion
 
                 #region 配置文件
@@ -121,11 +125,17 @@ namespace CommonM.logger
                 { RCode.CONF_ERROR, new MessageBlock(20_00_01, "配置文件错误") },
                 { RCode.CONF_WARN, new MessageBlock(20_00_01, "配置文件警告") },
                 // info 1
+                {RCode.CONF_INFO_SERIALIZATION, new MessageBlock(20_10_01, "文件序列化")},
+                {RCode.CONF_INFO_DESERIALIZATION, new MessageBlock(20_10_02, "文件反序列化")},
                 // ok 2
+                {RCode.CONF_OK_SERIALIZATION, new MessageBlock(20_20_01, "文件序列化成功")},
+                {RCode.CONF_OK_DESERIALIZATION, new MessageBlock(20_20_02, "文件反序列化成功")},
                 // warn 3
                 { RCode.CONF_WARN_UPDATE, new MessageBlock(20_30_0, "配置文件更新警告") },
                 // error 4
                 { RCode.CONF_ERROR_OPERATION, new MessageBlock(10_40_01, "配置文件操作错误") },
+                { RCode.CONF_ERROR_SERIALIZATION, new MessageBlock(10_40_02, "序列化失败") },
+                { RCode.CONF_ERROR_DESERIALIZATION, new MessageBlock(10_40_03, "反序列化失败") },
                 #endregion
                 #region 目标程序
                 { RCode.EXE_ERROR, new MessageBlock(30_00_01, "目标程序执行失败") },
