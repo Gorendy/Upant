@@ -51,15 +51,29 @@ namespace CommonM.logger
         // info
         CONF_INFO_SERIALIZATION,
         CONF_INFO_DESERIALIZATION,
+        CONF_INFO_FIND,
+        CONF_INFO_ADD_XMLNODE,
+        CONF_INFO_UPT_XMLNODE,
+        CONF_INFO_DEL_XMLNODE,
         // ok
         CONF_OK_SERIALIZATION,
         CONF_OK_DESERIALIZATION,
+        CONF_OK_FIND,
+        CONF_OK_ADD_XMLNODE,
+        CONF_OK_DEL_XMLNODE,
+        CONF_OK_UPT_XMLNODE,
         // warn
         CONF_WARN_UPDATE,
+        CONF_WARN_XMLNODE_NOTFOUND,
+        CONF_WARN_XMLNODE,
         // error
         CONF_ERROR_OPERATION,
         CONF_ERROR_SERIALIZATION,
         CONF_ERROR_DESERIALIZATION,
+        CONF_ERROR_FIND,
+        CONF_ERROR_ADD_XMLNODE,
+        CONF_ERROR_DEL_XMLNODE,
+        CONF_ERROR_UPT_XMLNODE,
         #endregion
 
         #region 目标程序执行
@@ -127,15 +141,29 @@ namespace CommonM.logger
                 // info 1
                 {RCode.CONF_INFO_SERIALIZATION, new MessageBlock(20_10_01, "文件序列化")},
                 {RCode.CONF_INFO_DESERIALIZATION, new MessageBlock(20_10_02, "文件反序列化")},
+                {RCode.CONF_INFO_FIND, new MessageBlock(20_10_03, "配置文件查找")},
+                {RCode.CONF_INFO_ADD_XMLNODE, new MessageBlock(20_10_04, "添加xml节点")},
+                {RCode.CONF_INFO_DEL_XMLNODE, new MessageBlock(20_10_05, "删除xml节点")},
+                {RCode.CONF_INFO_UPT_XMLNODE, new MessageBlock(20_10_06, "更新xml节点")},
                 // ok 2
                 {RCode.CONF_OK_SERIALIZATION, new MessageBlock(20_20_01, "文件序列化成功")},
                 {RCode.CONF_OK_DESERIALIZATION, new MessageBlock(20_20_02, "文件反序列化成功")},
+                {RCode.CONF_OK_FIND, new MessageBlock(20_20_03, "配置文件查找成功")},
+                {RCode.CONF_OK_ADD_XMLNODE, new MessageBlock(20_20_04, "添加xml节点成功")},
+                {RCode.CONF_OK_DEL_XMLNODE, new MessageBlock(20_20_05, "删除xml节点成功")},
+                {RCode.CONF_OK_UPT_XMLNODE, new MessageBlock(20_20_06, "修改xml节点成功")},
                 // warn 3
                 { RCode.CONF_WARN_UPDATE, new MessageBlock(20_30_0, "配置文件更新警告") },
+                { RCode.CONF_WARN_XMLNODE_NOTFOUND, new MessageBlock(20_30_1, "xml节点未发现") },
+                { RCode.CONF_WARN_XMLNODE, new MessageBlock(20_30_2, "xml节点警告") },
                 // error 4
                 { RCode.CONF_ERROR_OPERATION, new MessageBlock(10_40_01, "配置文件操作错误") },
                 { RCode.CONF_ERROR_SERIALIZATION, new MessageBlock(10_40_02, "序列化失败") },
                 { RCode.CONF_ERROR_DESERIALIZATION, new MessageBlock(10_40_03, "反序列化失败") },
+                { RCode.CONF_ERROR_FIND, new MessageBlock(10_40_04, "配置文件查找失败") },
+                { RCode.CONF_ERROR_ADD_XMLNODE, new MessageBlock(10_40_05, "添加xml节点失败") },
+                { RCode.CONF_ERROR_DEL_XMLNODE, new MessageBlock(10_40_06, "删除xml节点失败") },
+                { RCode.CONF_ERROR_UPT_XMLNODE, new MessageBlock(10_40_07, "修改xml节点失败") },
                 #endregion
                 #region 目标程序
                 { RCode.EXE_ERROR, new MessageBlock(30_00_01, "目标程序执行失败") },
