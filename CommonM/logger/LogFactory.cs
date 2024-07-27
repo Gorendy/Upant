@@ -23,7 +23,9 @@ namespace CommonM.logger
         public static ILogger getLogger(Type type) {
             return new Logger(type);
         }
-
+        public static ILogger getLogger(string name) {
+            return new Logger(name);
+        }
         public static void initLog() {
             string configFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "conf", "log.xml");
             FileInfo configFile = new FileInfo(configFilePath);

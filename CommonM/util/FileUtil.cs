@@ -51,6 +51,61 @@ namespace CommonM.util
             }
             logger.info(RCode.FILE_OK_MOVE, "file move successfully");
         }
+
+        /// <summary>
+        /// 寻找文件，在当前文件夹下
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="fileName"></param>
+        /// <returns>文件绝对路径</returns>
+        public static string findFile(string path, string fileName, bool deeplyFind = false)
+        {
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(fileName))
+            {
+                logger.warn(RCode.WARN, "params is null when find File");
+                return null;
+            }
+
+            if (!Directory.Exists(path))
+            {
+                logger.warn(RCode.FILE_NOT_EXIST, $"{path} is not found");
+                return null;
+            }
+            string result = null;
+            if (!deeplyFind) // 不查找子目录
+            {
+                foreach (string file in Directory.GetFiles(path))
+                {
+                    if (Path.GetFileName(file).Equals(file))
+                    {
+                        result = file;
+                    }
+                }
+                return result;
+            }
+
+            Queue<string> queue = new Queue<string>();
+            queue.Enqueue(path);
+            string tmp;
+            while (queue.Count > 0)
+            {
+                tmp = queue.Dequeue();
+                foreach (string dir in Directory.GetDirectories(tmp))
+                {
+                    queue.Enqueue(dir);
+                }
+
+                foreach (string file in Directory.GetFiles(tmp))
+                {
+                    if (Path.GetFileName(file).Equals(file))
+                    {
+                        result = file;
+                        queue.Clear();
+                    }
+                }
+            }
+            return result;
+        }
         public static string findFileBySuffix(string path, string suffixFile)
         {
             if (string.IsNullOrEmpty(path))

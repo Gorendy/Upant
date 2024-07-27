@@ -195,12 +195,12 @@ namespace CommonM.logger
         }
         private string format(Result.MessageBlock message)
         {
-            return $"ErCode:#{message.code},msg:{message.message}";
+            return $"ErCode: #{message.code},msg:{message.message}";
         }
 
         private string format(Result.MessageBlock message, string msg)
         {
-            return $"ErCode:#{message.code},msg:{message.message},tips:{msg}";
+            return $"ErCode: #{message.code},msg:{message.message},tips:{msg}";
         }
     }
 }

@@ -77,9 +77,9 @@
 
         <root>
             <level value="DEBUG" />
-            <appender-ref ref="debug" />
+            <!--<appender-ref ref="debug" />
             <appender-ref ref="info" />
-            <appender-ref ref="error" />
+            <appender-ref ref="error" />-->
             <appender-ref ref="ColoredConsoleAppender" />
         </root>
     </log4net>

@@ -53,10 +53,15 @@ namespace CommonM.domain.config
     public class SubConfig
     {
         /// <summary>
-        /// 
+        ///  子配置文件名称
         /// </summary>
         [XmlElement("UpdateConfigName")]
         public string updateConfigName { get; set; }
+        /// <summary>
+        /// 子配置文件在更新程序包的位置
+        /// </summary>
+        [XmlElement("UpdateConfigPath")]
+        public string updateConfigPath { get; set; }
         /// <summary>
         /// 执行程序配置文件（待更新配置文件）
         /// </summary>
