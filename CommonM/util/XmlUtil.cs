@@ -187,6 +187,27 @@ namespace CommonM.util
 
         #region 修改节点内容，包括节点内容
 
+        /// <summary>
+        /// 更新单个节点属性
+        /// </summary>
+        /// <param name="targetDoc"></param>
+        /// <param name="updateNode"></param>
+        /// <param name="targetNode"></param>
+        public static void updateNodeSingleAttribute(XmlDocument targetDoc, XmlNode updateNode, XmlNode targetNode) {
+            if (targetNode == null || targetDoc == null || updateNode == null) {
+                logger.warn(RCode.CONF_WARN_XMLNODE, $"params is not found, xmlDoc:'{targetDoc}', xmlNode:'{updateNode}'");
+                return;
+            }
+            logger.info(RCode.CONF_INFO_UPT_XMLNODE);
+            if (targetNode.Attributes.Count == 0) {
+                return;
+            }
+
+            updateNode.Attributes.RemoveAll();
+            foreach (XmlAttribute attr in targetNode.Attributes) {
+                ((XmlElement)updateNode).SetAttribute(attr.Name, attr.Value);
+            }
+        }
         public static void updateNode(XmlDocument targetDoc, XmlNode updateNode, ModifyContent contentCondition) {
             if (contentCondition == null || targetDoc == null || updateNode == null) {
                 logger.warn(RCode.CONF_WARN_XMLNODE, $"params is not found, xmlDoc:'{targetDoc}', xmlNode:'{updateNode}'");
@@ -259,7 +280,7 @@ namespace CommonM.util
                 parent.RemoveChild(node);
             }
             else {// 如果删除根节点
-                logger.debug(RCode.CONF_WARN_XMLNODE, "the node deleted is root node");
+                logger.warn(RCode.CONF_WARN_XMLNODE, "the node deleted is root node");
                 node.RemoveAll();
             }
             logger.info(RCode.CONF_OK_ADD_XMLNODE);

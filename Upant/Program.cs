@@ -15,11 +15,11 @@ namespace Upant
     class Program
     {
         internal delegate void Func();
-        static void Main(string[] args)
+        /*static void Main(string[] args)
         {
             LogFactory.initLog();
             exe(() => subDeserializeTest());
-        }
+        }*/
 
         public static void subDeserializeTest()
         {
@@ -52,10 +52,7 @@ namespace Upant
             conf.setting.localPath = @"D:test\ab\aa\ba";
             conf.setting.remotePath = @"C:test001\test";
             conf.setting.configFileName = "test.xml";
-            conf.setting.ignores = new List<Ignore>()
-            {
-                new Ignore(){directories = new List<string>() {"terst", "tst"}, files = new List<string>() {"file", "est02"}}
-            };
+            
             conf.config.executeConfigFile = "a.exe.conf";
             conf.config.updateConfigName = "update";
             ConfigUtil.serialization(conf, @"D:\coding\codwork\c#pro\test\test.xml");

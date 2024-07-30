@@ -59,6 +59,9 @@
             <DependentUpon>App.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
+        <Compile Include="content\DataContext.cs" />
+        <Compile Include="content\FileTool.cs" />
+        <Compile Include="content\StartUp.cs" />
         <Compile Include="MainWindow.xaml.cs">
             <DependentUpon>MainWindow.xaml</DependentUpon>
             <SubType>Code</SubType>
@@ -80,6 +83,12 @@
     </ItemGroup>
     <ItemGroup>
         <None Include="App.config"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\CommonM\CommonM.csproj">
+        <Project>{6996deef-ba91-4cb0-8804-928e44711668}</Project>
+        <Name>CommonM</Name>
+      </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

@@ -1,6 +1,6 @@
 using CommonM.domain.config;
 
-namespace Upant.context
+namespace UpantClient.content
 {
     /// <summary>
     /// 数据上下文

@@ -40,10 +40,15 @@ namespace CommonM.domain.config
         [XmlElement("ConfigFileName")]
         public string configFileName { get; set; }
         /// <summary>
+        /// 备份时忽略的文件
+        /// </summary>
+        [XmlElement("BackupIgnores")]
+        public Ignore backupIgnores { get; set; }
+        /// <summary>
         /// 忽略文件，支持文件夹格式
         /// </summary>
         [XmlElement("Ignores")]
-        public List<Ignore> ignores { get; set; }
+        public Ignore ignores { get; set; }
 
         public override string ToString() {
             return $"Setting:[localPath='{localPath}', remotePath='{remotePath}', configFileName='{configFileName}', ignores={ignores}]";
@@ -79,8 +84,9 @@ namespace CommonM.domain.config
     {
         [XmlElement("Directory")]
         public List<string> directories { get; set; }
-        [XmlElement("files")]
+        [XmlElement("File")]
         public List<string> files { get; set; }
+        
         
     }
 }

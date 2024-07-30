@@ -209,18 +209,18 @@ namespace CommonM.util
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <param name="destinationDir">目标文件夹</param>
-        public static void UnzipFile(string filePath, string destinationDir)
+        public static void UnzipFile(string file, string destinationDir)
         {
-            logger.debug(RCode.FILE_OPERATION, () => $"{filePath} will be unzip");
+            logger.debug(RCode.FILE_OPERATION, () => $"{file} will be unzip");
             logger.info(RCode.FILE_OPERATION, "file will be unzip");
-            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(destinationDir))
+            if (string.IsNullOrEmpty(file) || string.IsNullOrEmpty(destinationDir))
             {
                 logger.warn(RCode.WARN, "params is null when unzip");
                 return;
             }
-            if (!File.Exists(filePath))
+            if (!File.Exists(file))
             {
-                logger.info(RCode.FILE_NOT_EXIST,$"{filePath} is not exist");
+                logger.info(RCode.FILE_NOT_EXIST,$"{file} is not exist");
                 return;
             }
             if (!Directory.Exists(destinationDir))
@@ -232,11 +232,11 @@ namespace CommonM.util
 
             try
             {
-                ZipFile.ExtractToDirectory(filePath, destinationDir);
+                ZipFile.ExtractToDirectory(file, destinationDir);
             }
             catch (Exception e)
             {
-                logger.error(RCode.FILE_ERROR_UNZIP, $"{filePath} unzip unsuccessfully", e);
+                logger.error(RCode.FILE_ERROR_UNZIP, $"{file} unzip unsuccessfully", e);
                 return;
             }
             logger.info(RCode.FILE_OK_UNZIP);
@@ -350,13 +350,16 @@ namespace CommonM.util
 
         }
 
+        public static void copyDirectory(string sourceDir, string distDir, string newDirName) {
+            copyDirectory(sourceDir, distDir, newDirName, null, null);
+        }
         /// <summary>
         /// 复制文件夹到文件夹，如果存在新名称，则在目标文件夹中创建对应名称的文件夹并作为目标文件夹；如果不存在则复制到目标文件中
         /// </summary>
         /// <param name="sourceDir"></param>
         /// <param name="distDir"></param>
         /// <param name="newDirName"></param>
-        public static void copyDirectory(string sourceDir, string distDir, string newDirName) {
+        public static void copyDirectory(string sourceDir, string distDir, string newDirName, List<string> files, List<string> directory) {
             logger.info(RCode.FILE_OPERATION, "directory will be copy");
             logger.debug(RCode.FILE_OPERATION, () => $"{sourceDir} will be copy");
             if (!hasDirectory(sourceDir)) {
@@ -388,11 +391,62 @@ namespace CommonM.util
                     return;
                 }
             }
-            
+
+            if (files != null || directory != null) {
+                copyDir(sourceDir, targetDir, files, directory);
+            }
+            else {
+                copyDir(sourceDir, targetDir);
+            }
+        }
+        private static void copyDir(string sourceDir, string targetDir, List<string> files, List<string> dires) {
             Queue<string> dirs = new Queue<string>();
             Queue<string> target = new Queue<string>(); // 目标文件夹中子文件夹
             dirs.Enqueue(sourceDir);
-            target.Enqueue(newDirName);
+            target.Enqueue(Path.GetFileName(targetDir));
+            // 对各个文件夹 使用广搜复制
+            int total = 0, ernum = 0;
+            while (dirs.Count > 0) {
+                string curDir = dirs.Dequeue();
+                string suffixDir; // 目标文件夹后缀路径,例如：目标文件a,suffix=b ,target = a\b
+                targetDir = Path.Combine(sourceDir, suffixDir = target.Dequeue());// 将要把文件复制的目标文件夹
+                foreach (string file in Directory.GetFiles(curDir)) {
+                    if (files != null && files.Count != 0) {
+                        if (files.Contains(Path.GetFileName(file))) {
+                            continue;
+                        }
+                    }
+                    total++;
+                    try
+                    {
+                        File.Copy(file, targetDir);
+                    } catch (Exception e)
+                    {
+                        logger.warn(RCode.FILE_ERROR_COPY, $"{file} error");
+                        ernum++;
+                    }
+                }
+
+                // 在目标文件夹中创建文件夹
+                foreach (string sourDir in Directory.GetDirectories(curDir)) {
+                    string fileName = Path.GetFileName(sourDir);
+                    if (dires != null && dires.Count > 0) {
+                        if (dires.Contains(fileName)) {
+                            continue;
+                        }
+                    }
+                    Directory.CreateDirectory(Path.Combine(targetDir, fileName));
+                    dirs.Enqueue(sourDir);
+                    target.Enqueue(Path.Combine(suffixDir, fileName));
+                }
+            }
+            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}, error{ernum}");
+        }
+        private static void copyDir(string sourceDir, string targetDir) {
+            Queue<string> dirs = new Queue<string>();
+            Queue<string> target = new Queue<string>(); // 目标文件夹中子文件夹
+            dirs.Enqueue(sourceDir);
+            target.Enqueue(Path.GetFileName(targetDir));
             string curDir;
             string suffixDir; // 目标文件夹后缀路径,例如：目标文件a,suffix=b ,target = a\b
             // 对各个文件夹 使用广搜复制
@@ -422,7 +476,6 @@ namespace CommonM.util
             }
             logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}, error{ernum}");
         }
-
         public static void copyFile(string sourceFile, string distPath) {
             copyFile(sourceFile, distPath, null);
         }

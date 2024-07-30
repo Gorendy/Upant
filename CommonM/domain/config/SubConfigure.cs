@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
@@ -14,6 +15,10 @@ namespace CommonM.domain.config
         
         [XmlElement("Nodes")]
         public UpdateInfo info { get; set; }
+
+        public override string ToString() {
+            return $"SubConfigure:[setting='{setting}',Nodes='{info}']";
+        }
     }
 
     /// <summary>
@@ -23,6 +28,9 @@ namespace CommonM.domain.config
     {
         public string fileName;
         public string exeName;
+        public override string ToString() {
+            return $"SubSetting:[FileName='{fileName}',ExeName='{exeName}']";
+        }
     }
 
     /// <summary>
@@ -32,6 +40,10 @@ namespace CommonM.domain.config
     {
         [XmlElement("Node")]
         public List<Node> nodes;
+
+        public override string ToString() {
+            return nodes.ToString();
+        }
     }
 
     public class Node
@@ -49,6 +61,10 @@ namespace CommonM.domain.config
 
         public Node()
         {
+        }
+
+        public override string ToString() {
+            return $"Node:[xpath='{xpath}', operate='{operate}']";
         }
     }
 }

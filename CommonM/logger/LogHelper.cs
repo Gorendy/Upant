@@ -26,6 +26,7 @@ namespace CommonM.logger
         FILE_NOT_EXIST,
         // info
         FILE_EXIST,
+        FILE_INFO_COPY,
         // ok
         FILE_OK_COPY,
         FILE_OK_DELETE,
@@ -117,6 +118,7 @@ namespace CommonM.logger
                 { RCode.FILE_NOT_EXIST, new MessageBlock(10_00_02, "文件不存在") },
                 // info 1
                 { RCode.FILE_EXIST, new MessageBlock(10_10_01, "文件已存在") },
+                { RCode.FILE_INFO_COPY, new MessageBlock(10_10_02, "文件复制") },
                 // ok 2
                 { RCode.FILE_OK_COPY, new MessageBlock(10_20_01, "文件复制成功") },
                 { RCode.FILE_OK_DELETE, new MessageBlock(10_20_02, "文件删除成功") },
