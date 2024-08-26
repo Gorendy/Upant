@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7B6C70AB-EE3F-4682-9AD4-C10B5830A154}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>Upant</RootNamespace>
     <AssemblyName>Upant</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>

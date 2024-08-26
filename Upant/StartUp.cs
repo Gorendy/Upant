@@ -1,4 +1,5 @@
 using System;
+using CommonM.domain;
 using CommonM.domain.config;
 using CommonM.logger;
 using CommonM.util;
@@ -14,7 +15,7 @@ namespace Upant
         public static void initConfigInfo() {
             try {
                 string config =  ConfigUtil.findConfigFile(path, configName);
-                DataContext.config = (Configure) ConfigUtil.deserialization(typeof(Configure), config);
+                //DataContext.config = (Configure) ConfigUtil.deserialization(typeof(Configure), config);
             }
             catch (Exception e) {
                 logger.error(RCode.CONF_ERROR, "程序主配置文件加载失败");
@@ -25,7 +26,7 @@ namespace Upant
         public static void initSubConfigInfo() {
             try {
                 string config =  ConfigUtil.findConfigFile(path, configName);
-                DataContext.subConfigure = (SubConfigure) ConfigUtil.deserialization(typeof(SubConfigure), config);
+                //DataContext.subConfigure = (SubConfigure) ConfigUtil.deserialization(typeof(SubConfigure), config);
             }
             catch (Exception e) {
                 logger.error(RCode.CONF_ERROR, "程序主配置文件加载失败");

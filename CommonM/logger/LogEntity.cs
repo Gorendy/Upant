@@ -130,7 +130,8 @@ namespace CommonM.logger
     public abstract class LogBase: ILogger
     {
         protected readonly ILog log;
-
+        private static int errorCount = 0;
+        private static int warnCount = 0;
         protected LogBase(ILog log) {
             this.log = log;
         }
@@ -147,6 +148,21 @@ namespace CommonM.logger
         public abstract void debug(RCode code, string message, Exception e);
         public abstract void error(RCode code, string message = null);
         public abstract void error(RCode code, string message, Exception e);
+        public int getErrorNum() {
+            return errorCount;
+        }
+
+        public int getWarnNum() {
+            return warnCount;
+        }
+
+        public void reset() {
+            lock (this) {
+                errorCount = 0;
+                warnCount = 0;
+            }
+        }
+
         public abstract void info(RCode code, string message = null);
         public abstract void info(RCode code, string message, Exception e);
         public abstract void warn(RCode code, string message = null);
@@ -178,6 +194,8 @@ namespace CommonM.logger
             {
                 s = format(messageBlock, message);
             }
+
+            warnCount++;
             return s;
         }
         protected string errorMsg(RCode code, string message = null)
@@ -191,6 +209,8 @@ namespace CommonM.logger
             {
                 s = format(messageBlock, message);
             }
+
+            errorCount++;
             return s;
         }
         private string format(Result.MessageBlock message)

@@ -50,6 +50,47 @@ namespace CommonM.util
 
         #region 复制
 
+        /// <summary>
+        /// 将节点列表复制到目标节点下
+        /// 一般用于多个不同种类节点复制
+        /// </summary>
+        /// <param name="targetDoc"></param>
+        /// <param name="targetNode"></param>
+        /// <param name="nodes"></param>
+        public static int copyNodeList(XmlDocument targetDoc, XmlNode targetNode, List<XmlNode> nodes) {
+            if (targetDoc == null || targetNode == null || nodes == null || nodes.Count == 0) {
+                logger.warn(RCode.CONF_WARN_XMLNODE, $"params is illegal xmlDoc:'{targetDoc}', target:'{targetNode}', source:'{nodes}'");
+                return 0;
+            }
+            logger.info(RCode.CONF_INFO_ADD_XMLNODE);
+            int count = 0;
+            // 遍历列表
+            try {
+                foreach (XmlNode node in nodes) {
+                    if (node.NodeType == XmlNodeType.Comment) {
+                        copyComment(targetDoc, targetNode, node);
+                        continue;
+                    }
+                    copyNodeBySys(targetDoc, targetNode, node);
+                    count++;
+                }
+            }
+            catch (Exception e) {
+                logger.error(RCode.CONF_ERROR_OPERATION, "", e);
+                return count;
+            }
+            logger.info(RCode.CONF_OK_ADD_XMLNODE);
+            return count;
+        }
+
+        private static void copyNodeBySys(XmlDocument targetDoc, XmlNode targetNode, XmlNode comment) {
+            var node = targetDoc.ImportNode(comment, true);
+            targetNode.AppendChild(node);
+        }
+        private static void copyComment(XmlDocument targetDoc, XmlNode targetNode, XmlNode comment) {
+            var node = targetDoc.ImportNode(comment, false);
+            targetNode.AppendChild(node);
+        }
         public static void copyNode(XmlDocument targetDoc, XmlNode targetNode, XmlNode sourceNode) {
             copyNode(targetDoc, targetNode, sourceNode, sourceNode.Name, true, null,null);
         }
@@ -193,19 +234,23 @@ namespace CommonM.util
         /// <param name="targetDoc"></param>
         /// <param name="updateNode"></param>
         /// <param name="targetNode"></param>
-        public static void updateNodeSingleAttribute(XmlDocument targetDoc, XmlNode updateNode, XmlNode targetNode) {
-            if (targetNode == null || targetDoc == null || updateNode == null) {
-                logger.warn(RCode.CONF_WARN_XMLNODE, $"params is not found, xmlDoc:'{targetDoc}', xmlNode:'{updateNode}'");
+        public static void updateNodeSingleAttribute(XmlNode updateNode, XmlNode targetNode) {
+            if (targetNode == null ||  updateNode == null) {
+                logger.warn(RCode.CONF_WARN_XMLNODE, $"params is not found, xmlNode:'{updateNode}'");
                 return;
             }
             logger.info(RCode.CONF_INFO_UPT_XMLNODE);
-            if (targetNode.Attributes.Count == 0) {
-                return;
+            if(updateNode.Attributes != null) {
+                updateNode.Attributes.RemoveAll();
+            }
+            if (targetNode.Attributes != null) {
+                foreach (XmlAttribute attr in targetNode.Attributes) {
+                    ((XmlElement)updateNode).SetAttribute(attr.Name, attr.Value);
+                }
             }
 
-            updateNode.Attributes.RemoveAll();
-            foreach (XmlAttribute attr in targetNode.Attributes) {
-                ((XmlElement)updateNode).SetAttribute(attr.Name, attr.Value);
+            if (!string.IsNullOrEmpty(targetNode.InnerText)) {
+                updateNode.InnerText = targetNode.InnerText;
             }
         }
         public static void updateNode(XmlDocument targetDoc, XmlNode updateNode, ModifyContent contentCondition) {
@@ -271,7 +316,7 @@ namespace CommonM.util
         /// <param name="node"></param>
         public static void delNode(XmlNode node) {
             if (node == null) {
-                logger.warn(RCode.CONF_WARN_XMLNODE, $"node is not found");
+                logger.warn(RCode.CONF_WARN_XMLNODE, "node is not found");
                 return;
             }
             logger.info(RCode.CONF_INFO_DEL_XMLNODE);

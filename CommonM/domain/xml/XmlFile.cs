@@ -4,52 +4,22 @@ using System.Xml;
 using CommonM.logger;
 using CommonM.util;
 
-namespace CommonM.domain
+namespace CommonM.domain.xml
 {
-    public class XmlFile
+    public class XmlFile:AbstractXml
     {
-        private readonly XmlDocument doc;
-        private readonly string file;
-        private readonly string fileName;
-        private readonly Logger logger;
 
-        public delegate void ModifyFile();
-
-        public XmlFile(string filePath)
+        public XmlFile(string filePath):base(filePath)
         {
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-            {
-                throw new Exception($"{filePath} not found");
-            }
-            file = filePath;
-            fileName = Path.GetFileName(filePath);
-            logger = (Logger)LogFactory.getLogger(fileName);
-            try
-            {
-                doc = new XmlDocument();
-                doc.Load(filePath);
-            }
-            catch (Exception e)
-            {
-                logger.error(RCode.CONF_ERROR, $"{fileName} can not load", e);
-            }
+            
         }
 
-        public XmlNode findNodeByName(string name)
-        {
-            return XmlUtil.selectSingleNodeByName(doc, name);
-        }
 
-        public XmlNode findNodeByPattern(string xpath)
-        {
-            return XmlUtil.selectSingleNodeByPattern(doc, xpath);
-        }
-
-        public void copyNode(string xpath, XmlNode sourceNode)
+        public override void copyNode(string xpath, XmlNode sourceNode)
         {
             if (sourceNode == null || sourceNode.NodeType == XmlNodeType.Comment)
             {
-                logger.info(RCode.CONF_WARN_XMLNODE);
+                logger.warn(RCode.CONF_WARN_XMLNODE);
                 return;
             }
 
@@ -75,7 +45,7 @@ namespace CommonM.domain
             XmlUtil.copyNode(doc, findNodeByPattern(xpath), sourceNode, sourceNode.LocalName, contentCondition);
         }
 
-        public void deleteNode(string matcher)
+        public override void deleteNode(string matcher)
         {
             if (string.IsNullOrEmpty(matcher))
             {
@@ -100,15 +70,16 @@ namespace CommonM.domain
             XmlUtil.updateNode(doc, findNodeByPattern(xpath), contentCondition);
         }
 
-        public void updateAndSave(ModifyFile modify)
-        {
-            modify();
-            save();
+        public override void updateNode(string xpath, XmlNode source) {
+            try {
+                XmlUtil.updateNodeSingleAttribute(findNodeByPattern(xpath), source);
+            }
+            catch (Exception e) {
+                logger.error(RCode.CONF_ERROR_UPT_XMLNODE, $"{fileName} update error", e);
+            }
+            
         }
 
-        public void save()
-        {
-            doc.Save(file);
-        }
+        
     }
 }

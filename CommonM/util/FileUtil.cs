@@ -11,44 +11,42 @@ namespace CommonM.util
     /// </summary>
     public class FileUtil
     {
-        private static readonly Logger logger = (Logger) LogFactory.getLogger(typeof(FileUtil));
+        private static readonly Logger logger = (Logger)LogFactory.getLogger(typeof(FileUtil));
+
         /// <summary>
         /// 移动文件，如果目标位置不存在则创建
         /// </summary>
         /// <param name="sourceFile"></param>
         /// <param name="toPath"></param>
-        public static void moveFile(string sourceFile, string toPath, string newFileName = null)
-        {
+        public static void moveFile(string sourceFile, string toPath, string newFileName = null) {
             logger.debug(RCode.FILE_OPERATION, () => $"{sourceFile} will be move to {toPath}");
             logger.info(RCode.FILE_OPERATION, "file will be move");
-            if (string.IsNullOrEmpty(sourceFile) || string.IsNullOrEmpty(toPath))
-            {
+            if (string.IsNullOrEmpty(sourceFile) || string.IsNullOrEmpty(toPath)) {
                 logger.warn(RCode.WARN, "params is null when move file");
                 return;
             }
-            if (!File.Exists(sourceFile))
-            {
+
+            if (!File.Exists(sourceFile)) {
                 logger.info(RCode.FILE_NOT_EXIST, "file not exist");
                 return;
             }
-            if (!Directory.Exists(toPath))
-            {
+
+            if (!Directory.Exists(toPath)) {
                 Directory.CreateDirectory(toPath);
                 logger.debug(RCode.FILE_OPERATION, () => $"{toPath} is not exist and be created");
             }
 
-            try
-            {
+            try {
                 File.Move(sourceFile,
                     string.IsNullOrEmpty(newFileName)
                         ? Path.Combine(toPath, Path.GetFileName(sourceFile))
                         : Path.Combine(toPath, newFileName));
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 logger.error(RCode.FILE_ERROR_MOVE, $"{sourceFile} move unsuccessfully", e);
                 return;
             }
+
             logger.info(RCode.FILE_OK_MOVE, "file move successfully");
         }
 
@@ -58,85 +56,75 @@ namespace CommonM.util
         /// <param name="path"></param>
         /// <param name="fileName"></param>
         /// <returns>文件绝对路径</returns>
-        public static string findFile(string path, string fileName, bool deeplyFind = false)
-        {
-            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(fileName))
-            {
+        public static string findFile(string path, string fileName, bool deeplyFind = false) {
+            if (string.IsNullOrEmpty(path) || string.IsNullOrEmpty(fileName)) {
                 logger.warn(RCode.WARN, "params is null when find File");
                 return null;
             }
 
-            if (!Directory.Exists(path))
-            {
+            if (!Directory.Exists(path)) {
                 logger.warn(RCode.FILE_NOT_EXIST, $"{path} is not found");
                 return null;
             }
+
             string result = null;
             if (!deeplyFind) // 不查找子目录
             {
-                foreach (string file in Directory.GetFiles(path))
-                {
-                    if (Path.GetFileName(file).Equals(file))
-                    {
+                foreach (string file in Directory.GetFiles(path)) {
+                    if (Path.GetFileName(file).Equals(fileName)) {
                         result = file;
                     }
                 }
+
                 return result;
             }
 
             Queue<string> queue = new Queue<string>();
             queue.Enqueue(path);
             string tmp;
-            while (queue.Count > 0)
-            {
+            while (queue.Count > 0) {
                 tmp = queue.Dequeue();
-                foreach (string dir in Directory.GetDirectories(tmp))
-                {
+                foreach (string dir in Directory.GetDirectories(tmp)) {
                     queue.Enqueue(dir);
                 }
 
-                foreach (string file in Directory.GetFiles(tmp))
-                {
-                    if (Path.GetFileName(file).Equals(file))
-                    {
+                foreach (string file in Directory.GetFiles(tmp)) {
+                    if (Path.GetFileName(file).Equals(file)) {
                         result = file;
                         queue.Clear();
                     }
                 }
             }
+
             return result;
         }
-        public static string findFileBySuffix(string path, string suffixFile)
-        {
-            if (string.IsNullOrEmpty(path))
-            {
+
+        public static string findFileBySuffix(string path, string suffixFile) {
+            if (string.IsNullOrEmpty(path)) {
                 return null;
             }
-            if (!Directory.Exists(path))
-            {
-                if (File.Exists(path))
-                {
-                    if (path.EndsWith(suffixFile))
-                    {
+
+            if (!Directory.Exists(path)) {
+                if (File.Exists(path)) {
+                    if (path.EndsWith(suffixFile)) {
                         return path;
                     }
                 }
+
                 return null;
             }
+
             string result = null;
             Queue<string> queue = new Queue<string>();
             queue.Enqueue(path);
-            while (queue.Count > 0)
-            {
+            while (queue.Count > 0) {
                 string tmp = queue.Dequeue();
-                foreach (var dir in Directory.GetDirectories(tmp))
-                {
+                foreach (var dir in Directory.GetDirectories(tmp)) {
                     queue.Enqueue(dir);
                 }
-                foreach (var file in Directory.GetFiles(tmp))
-                {
-                    if (file.EndsWith(suffixFile))
-                    {
+
+                foreach (var file in Directory.GetFiles(tmp)) {
+                    if (file.EndsWith(suffixFile)) {
                         result = file;
                         queue.Clear();
                         break;
@@ -146,220 +134,194 @@ namespace CommonM.util
 
             return result;
         }
+
         /// <summary>
         /// 递归删除文件夹内容并包括文件
         /// </summary>
         /// <param name="path"></param>
         /// <param name="delOwn">是否删除当前文件夹</param>
-        public static void deleteFile(string path, bool delOwn = true)
-        {
+        public static void deleteFile(string path, bool delOwn = true) {
             logger.debug(RCode.FILE_OPERATION, () => $"{path} will be deleted");
-            if (string.IsNullOrEmpty(path))
-            {
+            if (string.IsNullOrEmpty(path)) {
                 logger.info(RCode.FILE_WARN, $"{path} is null");
                 return;
             }
-            if (File.Exists(path))
-            {
-                try
-                {
+
+            if (File.Exists(path)) {
+                try {
                     File.Delete(path);
-                } catch(Exception e)
-                {
+                }
+                catch (Exception e) {
                     logger.error(RCode.FILE_ERROR_DELETE, $"{path} file deleted unsuccessfully", e);
                 }
 
                 return;
             }
+
             // 删除文件夹中的文件
-            foreach (string file in Directory.GetFiles(path))
-            {
-                try
-                {
+            foreach (string file in Directory.GetFiles(path)) {
+                try {
                     File.Delete(file);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     logger.error(RCode.FILE_ERROR_DELETE, $"{path} file deleted unsuccessfully", e);
                 }
             }
+
             // 递归删除文件夹
-            foreach (string dir in Directory.GetDirectories(path))
-            {
+            foreach (string dir in Directory.GetDirectories(path)) {
                 deleteFile(dir);
             }
 
-            if (delOwn && Directory.GetFiles(path).Length == 0 && 
-                Directory.GetDirectories(path).Length == 0)
-            {
-                try
-                {
+            if (delOwn && Directory.GetFiles(path).Length == 0 &&
+                Directory.GetDirectories(path).Length == 0) {
+                try {
                     Directory.Delete(path);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     logger.error(RCode.FILE_ERROR_DELETE, $"{path} directory deleted unsuccessfully", e);
                     return;
                 }
+
                 logger.debug(RCode.FILE_OPERATION, () => $"{path} delete successfully");
             }
         }
+
         /// <summary>
         /// 解压缩文件zip格式
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <param name="destinationDir">目标文件夹</param>
-        public static void UnzipFile(string file, string destinationDir)
-        {
-            logger.debug(RCode.FILE_OPERATION, () => $"{file} will be unzip");
+        public static void UnzipFile(string filePath, string destinationDir) {
+            logger.debug(RCode.FILE_OPERATION, () => $"{filePath} will be unzip");
             logger.info(RCode.FILE_OPERATION, "file will be unzip");
-            if (string.IsNullOrEmpty(file) || string.IsNullOrEmpty(destinationDir))
-            {
+            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(destinationDir)) {
                 logger.warn(RCode.WARN, "params is null when unzip");
                 return;
             }
-            if (!File.Exists(file))
-            {
-                logger.info(RCode.FILE_NOT_EXIST,$"{file} is not exist");
+
+            if (!File.Exists(filePath)) {
+                logger.info(RCode.FILE_NOT_EXIST, $"{filePath} is not exist");
                 return;
             }
-            if (!Directory.Exists(destinationDir))
-            {
-                logger.info(RCode.FILE_WARN,$"{destinationDir} is not exist");
+
+            if (!Directory.Exists(destinationDir)) {
+                logger.info(RCode.FILE_WARN, $"{destinationDir} is not exist");
                 Directory.CreateDirectory(destinationDir);
                 logger.debug(RCode.FILE_OPERATION, () => $"{destinationDir} be created when unzip time");
             }
 
-            try
-            {
-                ZipFile.ExtractToDirectory(file, destinationDir);
+            try {
+                ZipFile.ExtractToDirectory(filePath, destinationDir);
             }
-            catch (Exception e)
-            {
-                logger.error(RCode.FILE_ERROR_UNZIP, $"{file} unzip unsuccessfully", e);
+            catch (Exception e) {
+                logger.error(RCode.FILE_ERROR_UNZIP, $"{filePath} unzip unsuccessfully", e);
                 return;
             }
+
             logger.info(RCode.FILE_OK_UNZIP);
         }
+
         /// <summary>
         /// 解压缩特定的文件名在压缩包中（只能是压缩包子目录下否则找不到）
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="destinationDir"></param>
         /// <param name="fileName"></param>
-        public static void UnzipFileExtractFile(string filePath, string destinationDir, string fileName)
-        {
+        public static void UnzipFileExtractFile(string filePath, string destinationDir, string fileName) {
             logger.info(RCode.FILE_OPERATION, "file will be unzip");
             logger.debug(RCode.FILE_OPERATION, () => $"{filePath} will be unzip");
-            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(destinationDir))
-            {
+            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(destinationDir)) {
                 logger.warn(RCode.WARN, "params is null when unzip");
                 return;
             }
-            if (!File.Exists(filePath))
-            {
-                logger.info(RCode.FILE_NOT_EXIST,$"{filePath} is not exist");
+
+            if (!File.Exists(filePath)) {
+                logger.info(RCode.FILE_NOT_EXIST, $"{filePath} is not exist");
                 return;
             }
-            if (!Directory.Exists(destinationDir))
-            {
-                logger.info(RCode.FILE_WARN,$"{destinationDir} is not exist");
+
+            if (!Directory.Exists(destinationDir)) {
+                logger.info(RCode.FILE_WARN, $"{destinationDir} is not exist");
                 Directory.CreateDirectory(destinationDir);
                 logger.debug(RCode.FILE_OPERATION, () => $"{destinationDir} be created when unzip time");
             }
-            try
-            {
-                using (ZipArchive za = ZipFile.OpenRead(filePath))
-                {
+
+            try {
+                using (ZipArchive za = ZipFile.OpenRead(filePath)) {
                     var result = za.GetEntry(fileName);
-                    if (result != null)
-                    {
+                    if (result != null) {
                         result.ExtractToFile(Path.Combine(destinationDir, result.FullName), overwrite: true);
                     }
-                    else
-                    {
-                        logger.warn(RCode.FILE_NOTFOUND,$"{fileName} is not found");
+                    else {
+                        logger.warn(RCode.FILE_NOTFOUND, $"{fileName} is not found");
                     }
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 logger.error(RCode.FILE_ERROR_UNZIP, $"{filePath} unzip unsuccessfully", e);
                 return;
             }
+
             logger.info(RCode.FILE_OK_UNZIP);
         }
-        
-        public static void File2ByteArray(string fromFile)
-        {
-            if (!File.Exists(fromFile))
-            {
+
+        public static void File2ByteArray(string fromFile) {
+            if (!File.Exists(fromFile)) {
                 return;
             }
-            try
-            {
 
-                using (var fsr = new FileStream(fromFile, FileMode.Open, FileAccess.Read))
-                {
-                    using (var br = new BinaryReader(fsr))
-                    {
+            try {
+                using (var fsr = new FileStream(fromFile, FileMode.Open, FileAccess.Read)) {
+                    using (var br = new BinaryReader(fsr)) {
                         br.BaseStream.Seek(0, SeekOrigin.Begin);
                         //ByteArray2File(br.ReadBytes((int)br.BaseStream.Length), @"C:\localfile\work\log", "test.zip");
                     }
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e);
                 throw;
             }
         }
-        public static void ByteArray2File(byte[] bytes, string filePath, string fileName, string extension)
-        {
-            if (bytes == null || bytes.Length == 0 || string.IsNullOrEmpty(filePath))
-            {
+
+        public static void ByteArray2File(byte[] bytes, string filePath, string fileName, string extension) {
+            if (bytes == null || bytes.Length == 0 || string.IsNullOrEmpty(filePath)) {
                 return;
             }
-            if (string.IsNullOrEmpty(fileName))
-            {
+
+            if (string.IsNullOrEmpty(fileName)) {
                 fileName = DateTime.Today.ToString("yyyy_MM_dd") + extension;
             }
-            else
-            {
-                if (!fileName.EndsWith(extension))
-                {
+            else {
+                if (!fileName.EndsWith(extension)) {
                     fileName = fileName + extension;
                 }
             }
-            try
-            {
-                using (var fs = new FileStream(Path.Combine(filePath, fileName), FileMode.CreateNew))
-                {
-                    using (var bs = new BinaryWriter(fs))
-                    {
+
+            try {
+                using (var fs = new FileStream(Path.Combine(filePath, fileName), FileMode.CreateNew)) {
+                    using (var bs = new BinaryWriter(fs)) {
                         bs.Write(bytes, 0, bytes.Length);
                         bs.Flush();
                     }
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e);
                 throw;
             }
-
         }
 
-        public static void copyDirectory(string sourceDir, string distDir, string newDirName) {
-            copyDirectory(sourceDir, distDir, newDirName, null, null);
-        }
+        #region 复制文件，如果目标目录文件存在则报错
+
         /// <summary>
-        /// 复制文件夹到文件夹，如果存在新名称，则在目标文件夹中创建对应名称的文件夹并作为目标文件夹；如果不存在则复制到目标文件中
+        /// 将源文件夹的内容复制到目标文件夹的源文件名称的子目录下
         /// </summary>
-        /// <param name="sourceDir"></param>
-        /// <param name="distDir"></param>
-        /// <param name="newDirName"></param>
-        public static void copyDirectory(string sourceDir, string distDir, string newDirName, List<string> files, List<string> directory) {
+        /// <param name="sourceDir">源文件夹</param>
+        /// <param name="distDir">目标文件夹</param>
+        /// <param name="newDirName">子文件夹别名</param>
+        public static void copyDirectory(string sourceDir, string distDir, string newDirName = null) {
             logger.info(RCode.FILE_OPERATION, "directory will be copy");
             logger.debug(RCode.FILE_OPERATION, () => $"{sourceDir} will be copy");
             if (!hasDirectory(sourceDir)) {
@@ -371,121 +333,238 @@ namespace CommonM.util
                 Directory.CreateDirectory(distDir);
                 logger.debug(RCode.FILE_DIR_NOTFOUND, () => $"{distDir} not exists and be created completely");
             }
-            string targetDir;
-            if (string.IsNullOrEmpty(newDirName)) {
-                targetDir = Path.Combine(distDir, Path.GetFileName(sourceDir));
-            } else
-            {
-                // 将文件夹中文件，复制到新名称文件夹
-                targetDir = Path.Combine(distDir, newDirName);
-            }
 
+            string targetDir = null, tmpName;
+            tmpName = string.IsNullOrEmpty(newDirName) ? Path.GetFileName(sourceDir) : newDirName;
+            targetDir = Path.Combine(distDir, tmpName);
             if (hasDirectory(targetDir)) {
                 logger.debug(RCode.FILE_EXIST, () => $"{targetDir} is exist and deleted when copy time");
                 try {
-                    deleteFile(targetDir, false); // 删除已有文件夹
-                    logger.debug(RCode.FILE_OPERATION, () => $"{targetDir} will be delted when copy");
+                    deleteFile(targetDir); // 删除已有文件夹
+                    logger.debug(RCode.FILE_OPERATION, () => $"{targetDir} will be deleted when copy");
                 }
                 catch (Exception e) {
-                   logger.error(RCode.FILE_ERROR_DELETE, $"{targetDir} deleted unsuccessfully when copy", e);
+                    logger.error(RCode.FILE_ERROR_DELETE, $"{targetDir} deleted unsuccessfully when copy", e);
                     return;
                 }
             }
 
-            if (files != null || directory != null) {
-                copyDir(sourceDir, targetDir, files, directory);
-            }
-            else {
-                copyDir(sourceDir, targetDir);
-            }
-        }
-        private static void copyDir(string sourceDir, string targetDir, List<string> files, List<string> dires) {
-            Queue<string> dirs = new Queue<string>();
-            Queue<string> target = new Queue<string>(); // 目标文件夹中子文件夹
-            dirs.Enqueue(sourceDir);
-            target.Enqueue(Path.GetFileName(targetDir));
-            // 对各个文件夹 使用广搜复制
-            int total = 0, ernum = 0;
-            while (dirs.Count > 0) {
-                string curDir = dirs.Dequeue();
-                string suffixDir; // 目标文件夹后缀路径,例如：目标文件a,suffix=b ,target = a\b
-                targetDir = Path.Combine(sourceDir, suffixDir = target.Dequeue());// 将要把文件复制的目标文件夹
-                foreach (string file in Directory.GetFiles(curDir)) {
-                    if (files != null && files.Count != 0) {
-                        if (files.Contains(Path.GetFileName(file))) {
-                            continue;
-                        }
-                    }
-                    total++;
-                    try
-                    {
-                        File.Copy(file, targetDir);
-                    } catch (Exception e)
-                    {
-                        logger.warn(RCode.FILE_ERROR_COPY, $"{file} error");
-                        ernum++;
-                    }
-                }
-
-                // 在目标文件夹中创建文件夹
-                foreach (string sourDir in Directory.GetDirectories(curDir)) {
-                    string fileName = Path.GetFileName(sourDir);
-                    if (dires != null && dires.Count > 0) {
-                        if (dires.Contains(fileName)) {
-                            continue;
-                        }
-                    }
-                    Directory.CreateDirectory(Path.Combine(targetDir, fileName));
-                    dirs.Enqueue(sourDir);
-                    target.Enqueue(Path.Combine(suffixDir, fileName));
-                }
-            }
-            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}, error{ernum}");
-        }
-        private static void copyDir(string sourceDir, string targetDir) {
-            Queue<string> dirs = new Queue<string>();
-            Queue<string> target = new Queue<string>(); // 目标文件夹中子文件夹
-            dirs.Enqueue(sourceDir);
-            target.Enqueue(Path.GetFileName(targetDir));
+            Queue<string> source = new Queue<string>();// 遍历源文件夹的子文件
+            Queue<string> subDir = new Queue<string>(); // 子文件夹
+            source.Enqueue(sourceDir);
+            subDir.Enqueue(tmpName);
             string curDir;
-            string suffixDir; // 目标文件夹后缀路径,例如：目标文件a,suffix=b ,target = a\b
-            // 对各个文件夹 使用广搜复制
             int total = 0, ernum = 0;
-            while (dirs.Count > 0) {
-                curDir = dirs.Dequeue();
-                targetDir = Path.Combine(sourceDir, suffixDir = target.Dequeue());// 将要把文件复制的目标文件夹
-                foreach (string dir in Directory.GetFiles(curDir)) {
-                    total++;
-                    try
-                    {
-                        File.Copy(dir, targetDir);
-                    } catch (Exception e)
-                    {
-                        logger.warn(RCode.FILE_ERROR_COPY, $"{dir} error");
-                        ernum++;
-                    }
+            while (source.Count > 0) {
+                curDir = source.Dequeue();
+                tmpName = subDir.Dequeue();
+                foreach (string dir in Directory.GetDirectories(curDir)) {
+                    subDir.Enqueue(Path.Combine(tmpName, Path.GetFileName(dir)));
+                    source.Enqueue(dir);
                 }
 
-                // 在目标文件夹中创建文件夹
-                foreach (string sourDir in Directory.GetDirectories(curDir)) {
-                    string fileName = Path.GetFileName(sourDir);
-                    Directory.CreateDirectory(Path.Combine(targetDir, fileName));
-                    dirs.Enqueue(sourDir);
-                    target.Enqueue(Path.Combine(suffixDir, fileName));
+                targetDir = Path.Combine(distDir, tmpName);
+                if (!hasDirectory(targetDir)) {
+                    Directory.CreateDirectory(targetDir);
+                }
+
+                string tmp = null;
+                try {
+                    foreach (string file in Directory.GetFiles(curDir)) {
+                        total++;
+                        tmp = file;
+                        File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+                        logger.debug(RCode.FILE_OK_COPY, () => $"{file} copied successfully");
+                    }
+                }
+                catch (Exception e) {
+                    logger.warn(RCode.FILE_ERROR_COPY, $"{tmp} copy error", e);
                 }
             }
-            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}, error{ernum}");
-        }
-        public static void copyFile(string sourceFile, string distPath) {
-            copyFile(sourceFile, distPath, null);
+            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}");
         }
 
         /// <summary>
+        /// 将目标文件夹内容（包括文件夹）复制到目标文件夹下
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="distDir"></param>
+        /// <param name="newDirName"></param>
+        /// <param name="files"></param>
+        /// <param name="dirs"></param>
+        public static void copyDirectory(string sourceDir, string distDir, string newDirName, List<string> files, List<string> dirs) {
+            if (files == null && dirs == null) {
+                return;
+            }
+            logger.info(RCode.FILE_OPERATION, "directory will be copy");
+            logger.debug(RCode.FILE_OPERATION, () => $"{sourceDir} will be copy");
+            if (!hasDirectory(sourceDir)) {
+                logger.warn(RCode.FILE_DIR_NOTFOUND, $"{sourceDir} is not found or is a file");
+                return;
+            }
+
+            if (!hasDirectory(distDir)) {
+                Directory.CreateDirectory(distDir);
+                logger.debug(RCode.FILE_DIR_NOTFOUND, () => $"{distDir} not exists and be created completely");
+            }
+
+            string targetDir = null, tmpName;
+            tmpName = string.IsNullOrEmpty(newDirName) ? Path.GetFileName(sourceDir) : newDirName;
+            targetDir = Path.Combine(distDir, tmpName);
+            if (hasDirectory(targetDir)) {
+                logger.debug(RCode.FILE_EXIST, () => $"{targetDir} is exist and deleted when copy time");
+                try {
+                    deleteFile(targetDir); // 删除已有文件夹
+                    logger.debug(RCode.FILE_OPERATION, () => $"{targetDir} will be deleted when copy");
+                }
+                catch (Exception e) {
+                    logger.error(RCode.FILE_ERROR_DELETE, $"{targetDir} deleted unsuccessfully when copy", e);
+                    return;
+                }
+            }
+
+            Queue<string> source = new Queue<string>();// 遍历源文件夹的子文件
+            Queue<string> subDir = new Queue<string>(); // 子文件夹
+            source.Enqueue(sourceDir);
+            subDir.Enqueue(tmpName);
+            string curDir;
+            int total = 0, ernum = 0;
+            while (source.Count > 0) {
+                curDir = source.Dequeue();
+                tmpName = subDir.Dequeue();
+                foreach (string dir in Directory.GetDirectories(curDir)) {
+                    string fn = Path.GetFileName(dir);
+                    if (dirs != null && dirs.Contains(fn)) {
+                        continue;
+                    }
+                    subDir.Enqueue(Path.Combine(tmpName, fn));
+                    source.Enqueue(dir);
+                }
+
+                targetDir = Path.Combine(distDir, tmpName);
+                if (!hasDirectory(targetDir)) {
+                    Directory.CreateDirectory(targetDir);
+                }
+                // 复制文件
+                string tmp = null;
+                try {
+                    if (files == null || files.Count == 0) {
+                        foreach (string file in Directory.GetFiles(curDir)) {// 如果不存在忽略文件
+                            total++;
+                            tmp = file;
+                            File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+                            logger.debug(RCode.FILE_OK_COPY, () => $"{file} copied successfully");
+                        }
+                    }
+                    else {
+                        foreach (string file in Directory.GetFiles(curDir)) {
+                            string fn = Path.GetFileName(file);
+                            if (files.Contains(fn)) {
+                                continue;
+                            }
+                            total++;
+                            tmp = file;
+                            File.Copy(file, Path.Combine(targetDir, fn));
+                            logger.debug(RCode.FILE_OK_COPY, () => $"{file} copied successfully");
+                        }
+                    }
+                    
+                }
+                catch (Exception e) {
+                    logger.warn(RCode.FILE_ERROR_COPY, $"{tmp} copy error", e);
+                }
+            }
+            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}");
+        }
+        /// <summary>
+        /// 将源文件夹下的内容复制到目标文件夹下，不包含在子目录中
+        /// 如果文件存在则覆盖
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="distDir"></param>
+        /// <param name="newDirName"></param>
+        /// <param name="files"></param>
+        /// <param name="dirs"></param>
+        public static void copyContent2Dir(string sourceDir, string distDir, List<string> files, List<string> dirs) {
+            if (files == null && dirs == null) {
+                return;
+            }
+            logger.info(RCode.FILE_OPERATION, "directory will be copy");
+            logger.debug(RCode.FILE_OPERATION, () => $"{sourceDir} will be copy");
+            if (!hasDirectory(sourceDir)) {
+                logger.warn(RCode.FILE_DIR_NOTFOUND, $"{sourceDir} is not found or is a file");
+                return;
+            }
+
+            if (!hasDirectory(distDir)) {
+                Directory.CreateDirectory(distDir);
+                logger.debug(RCode.FILE_DIR_NOTFOUND, () => $"{distDir} not exists and be created completely");
+            }
+
+            string targetDir = distDir, tmpName = "";
+
+            Queue<string> source = new Queue<string>();// 遍历源文件夹的子文件
+            Queue<string> subDir = new Queue<string>(); // 子文件夹
+            source.Enqueue(sourceDir);
+            subDir.Enqueue(tmpName);
+            string curDir;// 当前源目录
+            int total = 0, ernum = 0;
+            while (source.Count > 0) {
+                curDir = source.Dequeue();
+                tmpName = subDir.Dequeue();
+                foreach (string dir in Directory.GetDirectories(curDir)) {
+                    string fn = Path.GetFileName(dir);
+                    if (dirs != null && dirs.Contains(fn)) {
+                        continue;
+                    }
+                    subDir.Enqueue(Path.Combine(tmpName, fn));
+                    source.Enqueue(dir);
+                }
+
+                targetDir = Path.Combine(distDir, tmpName);
+                if (!hasDirectory(targetDir)) {
+                    Directory.CreateDirectory(targetDir);
+                }
+
+                string tmp = null;
+                try {
+                    if (files == null || files.Count == 0) {
+                        foreach (string file in Directory.GetFiles(curDir)) {
+                            total++;
+                            tmp = file;
+                            File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), true);
+                            logger.debug(RCode.FILE_OK_COPY, () => $"{file} copied successfully");
+                        }
+                    }
+                    else {
+                        foreach (string file in Directory.GetFiles(curDir)) {
+                            string fn = Path.GetFileName(file);
+                            if (files.Contains(fn)) {
+                                continue;
+                            }
+                            total++;
+                            tmp = file;
+                            File.Copy(file, Path.Combine(targetDir, fn), true);
+                            logger.debug(RCode.FILE_OK_COPY, () => $"{file} copied successfully");
+                        }
+                    }
+                    
+                }
+                catch (Exception e) {
+                    logger.warn(RCode.FILE_ERROR_COPY, $"{tmp} copy error", e);
+                }
+            }
+            logger.info(RCode.FILE_OK_COPY, $"{sourceDir} successfully copy, count:{total}");
+        }
+        
+
+        /// <summary>
         /// 复制文件到文件夹中，如果目标文件夹不存在，则添加
+        /// 如果存在则覆盖
         /// </summary>
         /// <param name="sourceFile"></param>
         /// <param name="distPath"></param>
-        /// <param name="newFileName">复制后文件名称，没有按照源文件创建</param>
+        /// <param name="newFileName">文件夹名称</param>
         public static void copyFile(string sourceFile, string distPath, string newFileName) {
             logger.debug(RCode.FILE_OPERATION, () => $"{sourceFile} will be copied");
             if (!hasFile(sourceFile)) {
@@ -506,13 +585,10 @@ namespace CommonM.util
             else {
                 targetFile = Path.Combine(distPath, newFileName);
             }
+
             bool flag = false;
             try {
-                if (hasFile(targetFile)) {
-                    logger.debug(RCode.FILE_WARN, () => $"{targetFile} is exist and will be delete");
-                    File.Delete(targetFile);
-                }
-                File.Copy(sourceFile, targetFile);
+                File.Copy(sourceFile, targetFile, true);// 如果存在，则覆盖
                 logger.debug(RCode.FILE_OPERATION, () => $"{Path.GetFileName(targetFile)} successfully copy");
             }
             catch (Exception e) {
@@ -523,6 +599,9 @@ namespace CommonM.util
             if (!flag)
                 logger.info(RCode.FILE_OK_COPY, $"{targetFile} be copy completely");
         }
+
+
+        #endregion
 
         /// <summary>
         /// 删除文件夹内所有文件包括文件夹

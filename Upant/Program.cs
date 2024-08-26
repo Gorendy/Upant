@@ -5,9 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonM.domain;
 using CommonM.domain.config;
+using CommonM.domain.vo;
+using CommonM.domain.xml;
 using CommonM.logger;
 using CommonM.util;
+using Setting = CommonM.domain.config.Setting;
 
 
 namespace Upant
@@ -15,55 +19,73 @@ namespace Upant
     class Program
     {
         internal delegate void Func();
-        /*static void Main(string[] args)
+        public string backUpDirName => $"bak_{DateTime.Now:yyyyMMdd}";
+        static void Main(string[] args)
         {
             LogFactory.initLog();
-            exe(() => subDeserializeTest());
-        }*/
+            Program p = new Program();
+            exe(() => p.modifyConfigFile());
+        }
 
-        public static void subDeserializeTest()
-        {
-            SubConfigure sub =  (SubConfigure) ConfigUtil.deserialization(typeof(SubConfigure), 
-                "C:\\localfile\\test\\subtest.xml");
-            Console.WriteLine(sub.ToString());
+        public void modifyConfigFile() {
+            string p1 = @"C:\localfile\test\modi.xml";
+            string p2 = @"C:\localfile\test\Glorysoft.EAP.Service.exe.config";
+            var xm = new XmlFile(p2);
+            var um = new UpdateXml(p1);
+            ConfigUtil.UpdateConfig(xm, null, "/configuration/appSettings");
+            xm.save();
         }
-        public static void subSerializeTest()
-        {
-            var conf = new SubConfigure(){setting = new SubSetting(), info = new UpdateInfo()};
-            conf.setting.fileName = "update.xml";
-            conf.setting.exeName = "exe";
-            conf.info.nodes = new List<Node>()
-            {
-                new Node("/pa/p", "A"), new Node("/te", "U")
-                ,new Node("/del", "D")
-            };
-            ConfigUtil.serialization(conf, "C:\\localfile\\test\\subtest.xml");
+        public void updateXmlTest() {
+            string path = @"C:\localfile\test\modi.xml";
+            var t = new UpdateXml(path);
+            Console.WriteLine(t.ToString());
         }
-        public static void deserializeTest()
-        {
-            Configure conf = new Configure() { setting = new Setting(), config = new SubConfig() };
-            string s = @"D:\coding\codwork\c#pro\test\test.xml";
-            conf = (Configure) ConfigUtil.deserialization(null, s);
-            Console.WriteLine(conf.ToString());
+        public void copyContentTest() {
+            string tar = @"C:\localfile\test\local";
+            string sou = @"C:\localfile\test\remote";
+            var fi = new List<string>() {"eap.config", "Glorysoft.EAP.Service.exe", "Glorysoft.EAP.Service.exe.config" };
+            var di = new List<string>() { "logs"};
+            FileUtil.copyContent2Dir(sou, tar, fi, di);
         }
-        public static void serializeTest()
-        {
-            Configure conf = new Configure() { setting = new Setting(), config = new SubConfig() };
-            conf.setting.localPath = @"D:test\ab\aa\ba";
-            conf.setting.remotePath = @"C:test001\test";
-            conf.setting.configFileName = "test.xml";
-            
-            conf.config.executeConfigFile = "a.exe.conf";
-            conf.config.updateConfigName = "update";
-            ConfigUtil.serialization(conf, @"D:\coding\codwork\c#pro\test\test.xml");
+
+        public void delet() {
+            string tar = @"C:\localfile\test";
+            string tar1 = @"C:\localfile\test\local1";
+            FileUtil.copyDirectory(tar1, tar, "local");
         }
+        /// <summary>
+        /// 备份
+        /// </summary>
+        public void backupTest() {
+            string path = @"C:\localfile\test\local";
+            var list = new List<string> { "logs", "Configuration"};
+            var files = new List<string> {"RabbitMQ.Client.xml" };
+            FileUtil.copyDirectory(path, path, backUpDirName, files, list);
+        }
+        public  void copyToNowDir() {
+            string source = @"C:\localfile\test\error";
+            string target = @"C:\localfile\test\proberparam";
+            FileUtil.copyContent2Dir(source, target, new List<string>(){"conf.xml"}, null);
+        }
+        
+        public void deserializeTest() {
+            string path = @"C:\localfile\test\UpdantConfig.xml";
+            var o = (Configuration)ConfigUtil.deserialization(typeof(Configuration), path);
+            Console.WriteLine(o.ToString());
+        }
+        
         public static void exe(Func func)
         {
             var s = new Stopwatch();
             Console.WriteLine("start.....");
-            s.Start();
-            func();
-            s.Stop();
+            try {
+                s.Start();
+                func();
+                s.Stop();
+            }
+            catch (Exception e) {
+                Console.WriteLine(e);
+            }
             Console.WriteLine("end.....");
             Console.WriteLine($"exe run time is {s.ElapsedMilliseconds} ms");
         }

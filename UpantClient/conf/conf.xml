@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UpantConfiguration>
+  <Setting>
+    <ConfigFileName>test.xml</ConfigFileName>
+    <BackupIgnores>
+      <Directory>directory</Directory>
+      <File>file</File>
+    </BackupIgnores>
+    <Ignores>
+      <Directory>directory</Directory>
+      <File>file</File>
+    </Ignores>
+  </Setting>
+  <SubConfiguration>
+    <LocalPath>D:test\ab\aa\ba</LocalPath>
+    <RemotePath>C:test001\test</RemotePath>
+    <UpdateConfigName>update</UpdateConfigName>
+    <ExecuteConfigFile>a.exe.conf</ExecuteConfigFile>
+  </SubConfiguration>
+</UpantConfiguration>

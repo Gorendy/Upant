@@ -45,19 +45,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="domain\config\Configure.cs" />
-    <Compile Include="domain\config\SubConfigure.cs" />
-    <Compile Include="domain\XmlFile.cs" />
+    <Compile Include="domain\config\Configuration.cs" />
+    <Compile Include="domain\constant\Constant.cs" />
+    <Compile Include="domain\vo\ToBeUpdateConf.cs" />
+    <Compile Include="domain\vo\UpdateNodeVO.cs" />
+    <Compile Include="domain\xml\AbstractXml.cs" />
+    <Compile Include="domain\xml\UpdateXml.cs" />
+    <Compile Include="domain\xml\XmlFile.cs" />
     <Compile Include="logger\LogEntity.cs" />
     <Compile Include="logger\LogFactory.cs" />
     <Compile Include="logger\LogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="util\ConfigUtil.cs" />
     <Compile Include="util\FileUtil.cs" />
+    <Compile Include="util\FTPUtil.cs" />
+    <Compile Include="util\StringUtil.cs" />
     <Compile Include="util\XmlUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net" Version="2.0.15" />
+    <PackageReference Include="System.Net.FtpClient" Version="1.0.5824.34026" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

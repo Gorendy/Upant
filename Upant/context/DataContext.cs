@@ -7,7 +7,5 @@ namespace Upant.context
     /// </summary>
     public class DataContext
     {
-        public static Configure config;
-        public static SubConfigure subConfigure;
     }
 }

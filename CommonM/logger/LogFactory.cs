@@ -10,7 +10,7 @@ namespace CommonM.logger
         private static ILogger _logger;
         public static ILogger getLogger() {
             if (_logger == null) {
-                lock (_logger) {
+                lock (typeof(LogFactory)) {
                     if (_logger == null) {
                         _logger = new Logger("UpantService");
                     }

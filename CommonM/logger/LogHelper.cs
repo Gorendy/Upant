@@ -77,6 +77,21 @@ namespace CommonM.logger
         CONF_ERROR_UPT_XMLNODE,
         #endregion
 
+        #region FTP
+        // unkonw
+        FTP_INFO,
+        FTP_WARN,
+        FTP_ERROR,
+        // ok
+        FTP_OK_CONNECT,
+        FTP_OK_DOWNLOAD,
+        // warn
+        FTP_WARN_DOWNLOAD,
+        // error
+        FTP_ERROR_CONNECT,
+        FTP_ERROR_DOWNLOAD,
+
+        #endregion
         #region 目标程序执行
 
         // 程序执行
@@ -167,9 +182,26 @@ namespace CommonM.logger
                 { RCode.CONF_ERROR_DEL_XMLNODE, new MessageBlock(10_40_06, "删除xml节点失败") },
                 { RCode.CONF_ERROR_UPT_XMLNODE, new MessageBlock(10_40_07, "修改xml节点失败") },
                 #endregion
+
+                
+                
                 #region 目标程序
                 { RCode.EXE_ERROR, new MessageBlock(30_00_01, "目标程序执行失败") },
                 { RCode.EXE_COMPLETE, new MessageBlock(30_02_00, "目标程序执行成功，程序以运行") },                
+                #endregion
+                #region FTP
+                { RCode.FTP_INFO, new MessageBlock(30_00_01, "FTP操作信息") },
+                { RCode.FTP_WARN, new MessageBlock(30_00_02, "FTP警告") },
+                { RCode.FTP_ERROR, new MessageBlock(30_00_03, "FTP错误") },
+                
+                { RCode.FTP_OK_CONNECT, new MessageBlock(30_02_01, "FTP连接成功") },
+                { RCode.FTP_OK_DOWNLOAD, new MessageBlock(30_02_02, "FTP文件下载成功") },
+                
+                { RCode.FTP_WARN_DOWNLOAD, new MessageBlock(30_03_01, "FTP文件下载警告") },
+                
+                { RCode.FTP_ERROR_CONNECT, new MessageBlock(30_04_01, "FTP连接失败") },
+                { RCode.FTP_ERROR_DOWNLOAD, new MessageBlock(30_04_02, "FTP文件下载失败") },
+
                 #endregion
 
             };
@@ -205,6 +237,9 @@ namespace CommonM.logger
         void warn(RCode code, string message, Exception e);
         void error(RCode code, string message = null);
         void error(RCode code, string message, Exception e);
+        int getErrorNum();
+        int getWarnNum();
+        void reset();
     }
     
 }

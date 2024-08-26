@@ -1,16 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Xml;
 using System.Xml.Serialization;
+using CommonM.domain.constant;
+using CommonM.domain.vo;
+using CommonM.domain.xml;
 using CommonM.logger;
 
 namespace CommonM.util
 {
     public class ConfigUtil
     {
-        private  static readonly Logger logger = (Logger) LogFactory.getLogger(typeof(ConfigUtil));
-        private static readonly string defaultConfigPath = "conf";
+        private static readonly Logger logger = (Logger) LogFactory.getLogger(typeof(ConfigUtil));
         /// <summary>
         /// 查找程序config文件
         /// 优先级 conf/.config > ./.config
@@ -32,13 +37,13 @@ namespace CommonM.util
             }
 
             string result = null;
-            if (!Directory.Exists(Path.Combine(path, defaultConfigPath)))
+            if (!Directory.Exists(Path.Combine(path, Constant.defaultConfigPath)))
             {
-                logger.debug(RCode.FILE_NOT_EXIST, () => $"{name} not found in {Path.Combine(path, defaultConfigPath)}");
+                logger.debug(RCode.FILE_NOT_EXIST, () => $"{name} not found in {Path.Combine(path, Constant.defaultConfigPath)}");
             }
             else
             {
-                result = FileUtil.findFile(Path.Combine(path, defaultConfigPath), name);
+                result = FileUtil.findFile(Path.Combine(path, Constant.defaultConfigPath), name);
             }
 
             if (!string.IsNullOrEmpty(result))
@@ -50,7 +55,7 @@ namespace CommonM.util
             result = FileUtil.findFile(path, name);
             if (string.IsNullOrEmpty(result))
             {
-                logger.error(RCode.CONF_ERROR_FIND, $"{name} not found in {path} and ./{defaultConfigPath}");
+                logger.error(RCode.CONF_ERROR_FIND, $"{name} not found in {path} and ./{Constant.defaultConfigPath}");
             }
             else
             {
@@ -58,6 +63,8 @@ namespace CommonM.util
             }
             return result;
         }
+
+        #region 序列化
 
         /// <summary>
         /// 序列化对象到文件中
@@ -113,5 +120,40 @@ namespace CommonM.util
             logger.debug(RCode.CONF_OK_DESERIALIZATION, () => obj.ToString());
             return obj;
         }
+
+        #endregion
+
+        #region 配置文件节点操作
+
+        /// <summary>
+        /// 将待更新的节点更新到目标程序配置文件中
+        /// </summary>
+        /// <param name="conf">目标文件</param>
+        /// <param name="updateXml">待更新节点文件</param>
+        /// <param name="nodeMatcher">目标配置文件节点匹配规则</param>
+        public static void UpdateConfig(XmlFile conf, ToBeUpdateConf updateXml, string nodeMatcher) {
+            var updateList = updateXml.getUpdateNode();
+            if (updateList == null || updateList.Count == 0) {
+                logger.warn(RCode.CONF_WARN, $"{updateXml.getFileName()} there is nothing in file to be updated");
+                return;
+            }
+            // 遍历待更新节点
+            // 判断节点更新还是复制
+            foreach (UpdateNodeVO vo in updateList) {
+                string str = nodeMatcher + vo.getSearchMatcher();
+                // 将待更新节点复制到目标文件中
+                if (conf.findNodeByPattern(str) == null) {
+                    List<XmlNode> list = vo.getAllXmlNodes();
+                    conf.copyNodeList(nodeMatcher, list);
+                }
+                else {// 节点存在修改
+                    conf.updateNode(str, vo.Node);
+                }
+            }
+            conf.save();
+        }
+        
+        #endregion
+        
     } 
 }
